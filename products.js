@@ -399,8 +399,8 @@ const products = {
         desc: "Peynirli, fıstıklı ve sade katmer seçenekleriyle, çıtır dokulu hamur ve bol iç malzeme.",
         prices: [
             { label: "Katmer",                  price: "480.00 ₺" },
-            { label: "Simit Katmer",            price: "490.00 ₺" },
-            { label: "Çikolatalı Katmer",       price: "540.00 ₺" },
+            { label: "Simit Katmer",            price: "500.00 ₺" },
+            { label: "Çikolatalı Katmer",       price: "500.00 ₺" },
             { label: "Çikolatalı Muska Katmer", price: "225.00 ₺" }
         ],
         note: ""
