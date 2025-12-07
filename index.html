@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bab-ı Alâ Künefe | QR Menü</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        :root {
+            --bg: #050806;
+            --bg-soft: #0b100b;
+            --card: #10130f;
+            --accent-green: #08c737;
+            --accent-gold: #f4c86a;
+            --accent-soft: rgba(8, 199, 55, 0.16);
+            --text: #fdfdf8;
+            --muted: #b7c0b5;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #141b11 0, var(--bg) 55%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-green) #050806;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 768px;
+            padding: 10px 10px 80px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 4px 10px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: radial-gradient(circle at top, #141b11 0, rgba(5, 8, 6, 0.95) 60%);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-logo { height: 32px; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-text span:first-child { font-size: 14px; font-weight: 600; }
+        .brand-text span:last-child { font-size: 11px; color: var(--muted); }
+
+        .tag {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(244, 200, 106, 0.12);
+            color: var(--accent-gold);
+            border: 1px solid rgba(244, 200, 106, 0.4);
+        }
+
+        .hero {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 4 / 3;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 14px;
+        }
+
+        .hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: opacity .25s ease, transform .4s ease;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 45%);
+        }
+
+        .hero-content {
+            position: absolute;
+            inset: auto 16px 16px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .hero-title { font-size: 20px; font-weight: 700; letter-spacing: 0.03em; }
+        .hero-sub { font-size: 11px; color: #e3e7dd; margin-top: 3px; }
+
+        .hero-badge {
+            background: rgba(0,0,0,0.78);
+            border-radius: 999px;
+            padding: 7px 11px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            border: 1px solid rgba(244, 200, 106, 0.35);
+        }
+        .hero-badge span:first-child { color: var(--muted); }
+        .hero-badge span:last-child { font-weight: 600; color: var(--accent-gold); }
+
+        .tabs-wrapper { margin-bottom: 10px; }
+        .tabs-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin: 2px 2px 6px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .tabs-row { display: flex; align-items: center; gap: 6px; }
+
+        .product-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            flex: 1;
+        }
+        .product-tabs::-webkit-scrollbar { display: none; }
+
+        .product-tab {
+            flex: 0 0 auto;
+            border-radius: 999px;
+            padding: 7px 11px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            min-width: 110px;
+        }
+        .product-tab .title {
+            font-size: 11px;
+            font-weight: 500;
+            color: #f4f5ef;
+            white-space: nowrap;
+        }
+        .product-tab .meta {
+            font-size: 10px;
+            opacity: .7;
+            white-space: nowrap;
+        }
+        .product-tab.active {
+            background: var(--accent-soft);
+            border-color: var(--accent-green);
+            color: var(--text);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+        }
+        .product-tab.active .title { color: #ffffff; }
+
+        .tabs-arrow {
+            flex: 0 0 auto;
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 1px solid rgba(8, 199, 55, 0.8);
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
+            color: #141205;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0,0,0,0.7);
+        }
+        .tabs-arrow:active { transform: scale(0.95); }
+
+        .category-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 14px 14px 10px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .card.slide-in { animation: slideInRight .25s ease-out; }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .card-title { font-size: 19px; font-weight: 600; }
+        .card-tagline { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+        .gram-badge {
+            font-size: 10px;
+            border-radius: 999px;
+            padding: 4px 8px;
+            background: rgba(8, 199, 55, 0.08);
+            color: var(--accent-green);
+            align-self: flex-start;
+            border: 1px solid rgba(8, 199, 55, 0.35);
+        }
+
+        .card-desc { font-size: 12px; color: var(--muted); margin: 6px 0 8px; }
+
+        .price-list {
+            border-radius: 12px;
+            background: var(--bg-soft);
+            overflow: hidden;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 10px;
+            font-size: 13px;
+        }
+        .price-row:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+        .price-row span:first-child { color: #f1f2ea; }
+        .price-row span:last-child { color: var(--accent-gold); font-weight: 600; }
+
+        .note { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+        .bottom-bar {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 10px;
+            width: 100%;
+            max-width: 768px;
+            padding: 0 10px;
+            z-index: 30;
+        }
+
+        .bottom-actions {
+            background: rgba(5, 7, 4, 0.98);
+            border-radius: 999px;
+            padding: 6px 8px;
+            display: flex;
+            gap: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .action-btn {
+            flex: 1;
+            border-radius: 999px;
+            border: none;
+            padding: 8px 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
+            color: #141205;
+            font-weight: 600;
+        }
+        .action-btn.ghost { background: transparent; color: var(--text); }
+        .action-btn span.icon { font-size: 16px; }
+
+        body::-webkit-scrollbar { width: 6px; }
+        body::-webkit-scrollbar-track { background: #050806; }
+        body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent-green), var(--accent-gold));
+            border-radius: 999px;
+        }
+
+        @media (min-width: 600px) {
+            .app { padding: 16px 16px 90px; }
+            .hero-title { font-size: 22px; }
+            .card-desc, .price-row { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <header class="app-header">
+        <div class="brand">
+            <img class="brand-logo"
+                 src="https://www.babialakunefe.com/03_images/logo.png"
+                 alt="Bab-ı Alâ Künefe logosu" />
+            <div class="brand-text">
+                <span>Bab-ı Alâ Künefe</span>
+                <span>Künefenin ustasından</span>
+            </div>
+        </div>
+        <div class="tag">QR Menü</div>
+    </header>
+
+    <section class="hero" id="heroArea">
+        <img id="heroImage" src="" alt="" />
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div>
+                <div id="heroTitle" class="hero-title"></div>
+                <div id="heroSub" class="hero-sub"></div>
+            </div>
+            <div class="hero-badge">
+                <span id="heroBadgeLabel">Başlangıç fiyatı</span>
+                <span id="heroPrice"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="tabs-wrapper">
+        <div class="tabs-label">Ürün seçin</div>
+        <div class="tabs-row">
+            <button id="tabPrev" class="tabs-arrow" type="button">‹</button>
+            <div id="productTabs" class="product-tabs"></div>
+            <button id="tabNext" class="tabs-arrow" type="button">›</button>
+        </div>
+    </section>
+
+    <div id="categoryLabel" class="category-label"></div>
+
+    <section class="content" id="contentArea">
+        <div id="mainCard" class="card">
+            <div class="card-header">
+                <div>
+                    <div id="cardTitle" class="card-title"></div>
+                    <div id="cardTagline" class="card-tagline"></div>
+                </div>
+                <div id="cardBadge" class="gram-badge"></div>
+            </div>
+            <p id="cardDesc" class="card-desc"></p>
+            <div id="priceList" class="price-list"></div>
+            <div id="cardNote" class="note"></div>
+        </div>
+    </section>
+</div>
+
+<div class="bottom-bar">
+    <div class="bottom-actions">
+        <button class="action-btn primary" onclick="window.location.href='tel:+90XXXXXXXXXX'">
+            <span class="icon">📞</span>
+            <span>Garsonu çağır</span>
+        </button>
+        <button class="action-btn ghost" onclick="shareLocation()">
+            <span class="icon">📤</span>
+            <span>Konum Paylaş</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    const LOCATION_URL = "https://share.google/cQ9xoIpl0kTkMQcEi";
+
+    function shareLocation() {
+        if (navigator.share) {
+            navigator.share({
+                title: "Bab-ı Alâ Künefe Konumu",
+                text: "Bab-ı Alâ Künefe konumunu paylaşıyorum.",
+                url: LOCATION_URL
+            }).catch(() => {});
+        } else {
+            window.location.href = LOCATION_URL;
+        }
+    }
+
+    // --- ÜRÜNLER ---
+    const products = {
+        "peynirli-kunefe": {
+            category: "Künefe",
+            title: "Peynirli Künefe",
+            subtitle: "Tel Kadayıf, Özel Sade Yağ, Özel Künefe Peyniri.",
+            image: "peynirli-kunefe.png",
+            badge: "Klasik lezzet",
+            tagline: "Künefenin en bilinen ve sevilen hali.",
+            desc: "Tel kadayıf ve sade yağla buluşan özel künefe peyniri ile hazırlanan klasik lezzet.",
+            prices: [
+                { label: "1 Kişilik", price: "150.00 ₺" },
+                { label: "2 Kişilik", price: "290.00 ₺" },
+                { label: "3 Kişilik", price: "420.00 ₺" },
+                { label: "4 Kişilik", price: "570.00 ₺" }
+            ],
+            note: ""
+        },
+        "hasir-peynirli": {
+            category: "Künefe",
+            title: "Hasır Peynirli",
+            subtitle: "Hasır Kadayıf, Bol Fıstıklı, Özel Sade Yağ, Özel Künefe Peyniri.",
+            image: "hasir-kunefe.png",
+            badge: "Hasır kadayıf",
+            tagline: "Daha yoğun kadayıf dokusu ve bol fıstık.",
+            desc: "Hasır kadayıf ve özel künefe peyniri ile, bol fıstıklı olarak hazırlanan özel künefe.",
+            prices: [
+                { label: "1 Kişilik", price: "210.00 ₺" },
+                { label: "2 Kişilik", price: "420.00 ₺" },
+                { label: "3 Kişilik", price: "610.00 ₺" },
+                { label: "4 Kişilik", price: "810.00 ₺" }
+            ],
+            note: ""
+        },
+        "fistikli-kunefe": {
+            category: "Künefe",
+            title: "Fıstıklı Künefe",
+            subtitle: "Tel Kadayıf, Özel Sade Yağ, Bol Fıstıklı.",
+            image: "yari-fistikzade-yari-billuriye.png",
+            badge: "Bol fıstıklı",
+            tagline: "Fıstığın ön planda olduğu yoğun bir lezzet.",
+            desc: "Tel kadayıf ve sade yağla hazırlanan, bol fıstıklı özel künefemiz.",
+            prices: [
+                { label: "1 Kişilik", price: "240.00 ₺" },
+                { label: "2 Kişilik", price: "480.00 ₺" },
+                { label: "3 Kişilik", price: "700.00 ₺" },
+                { label: "4 Kişilik", price: "910.00 ₺" }
+            ],
+            note: ""
+        },
+        "hasir-kaymakli-kunefe": {
+            category: "Künefe",
+            title: "Hasır Kaymaklı",
+            subtitle: "Hasır Kadayıf, Özel Sade Yağ, Özel Künefe Kaymağı.",
+            image: "hasir-kaymakli-kunefe.png",
+            badge: "Kaymaklı lezzet",
+            tagline: "Hasır kadayıf ve künefe kaymağının buluşması.",
+            desc: "Hasır kadayıf ve özel sade yağın, künefe kaymağı ile birleştiği zengin bir tat.",
+            prices: [
+                { label: "1 Kişilik", price: "210.00 ₺" },
+                { label: "2 Kişilik", price: "420.00 ₺" },
+                { label: "3 Kişilik", price: "610.00 ₺" },
+                { label: "4 Kişilik", price: "810.00 ₺" }
+            ],
+            note: ""
+        },
+        "yari-hasir-yari-peynir": {
+            category: "Künefe",
+            title: "Yarı Hasır - Yarı Peynir",
+            subtitle: "Hasır Kadayıf, Özel Sade Yağ, Özel Künefe Kaymağı, Bol Fıstıklı.",
+            image: "yari-hasir-yari-kunefe.png",
+            badge: "Karışık tabak",
+            tagline: "İki farklı dokuyu tek tabakta deneyimleyin.",
+            desc: "Bir tarafı hasır, diğer tarafı peynirli hazırlanmış, paylaşmalık karışık künefe.",
+            prices: [
+                { label: "2 Kişilik", price: "470.00 ₺" },
+                { label: "3 Kişilik", price: "695.00 ₺" },
+                { label: "4 Kişilik", price: "920.00 ₺" }
+            ],
+            note: ""
+        },
+        "yari-fistikzade-yari-billuriye": {
+            category: "Künefe",
+            title: "Yarı Fıstıkzade - Yarı Billuriye",
+            subtitle: "Tel Kadayıf, Özel Sade Yağ, Bol Fıstık, Özel Künefe Kaymağı.",
+            image: "yari-fistikzade-yari-billuriye.png",
+            badge: "Paylaşmalık",
+            tagline: "Fıstıkzade ve billuriye aynı tabakta.",
+            desc: "Bir yanında fıstıkzade, diğer yanında billuriye sunulan özel karışım.",
+            prices: [
+                { label: "2 Kişilik", price: "580.00 ₺" },
+                { label: "3 Kişilik", price: "890.00 ₺" },
+                { label: "4 Kişilik", price: "1160.00 ₺" }
+            ],
+            note: ""
+        },
+        "uc-bir-arada": {
+            category: "Künefe",
+            title: "3'ü Bir Arada",
+            subtitle: "Özel Sade Yağ, Hasır Kadayıf, Bol Fıstık ve Kaymak.",
+            image: "3u-bir-arada.png",
+            badge: "Üçlü kombin",
+            tagline: "Üç farklı lezzeti tek tabakta toplayan özel sunum.",
+            desc: "Bir tabakta üç farklı künefe yorumunu denemek isteyenler için hazırlanmıştır.",
+            prices: [
+                { label: "2 Kişilik", price: "560.00 ₺" },
+                { label: "3 Kişilik", price: "840.00 ₺" },
+                { label: "4 Kişilik", price: "1050.00 ₺" }
+            ],
+            note: ""
+        },
+        "dort-bir-arada": {
+            category: "Künefe",
+            title: "4'ü Bir Arada",
+            subtitle: "Hasır-Tel Kadayıf, Özel Sade Yağ, Bol Fıstık, Özel Künefe Kaymağı.",
+            image: "4u-bir-arada.png",
+            badge: "Dört farklı lezzet",
+            tagline: "Dört çeşit künefeyi tek tabakta deneyimleyin.",
+            desc: "Aynı tabakta dört farklı künefe dokusunu bir araya getiren özel karışım.",
+            prices: [
+                { label: "2 Kişilik", price: "570.00 ₺" },
+                { label: "3 Kişilik", price: "850.00 ₺" },
+                { label: "4 Kişilik", price: "1100.00 ₺" }
+            ],
+            note: ""
+        },
+        "special-kunefe": {
+            category: "Künefe",
+            title: "Special Künefe",
+            subtitle: "Tel Kadayıf, Özel Sade Yağ, Bol Fıstık, Özel Künefe Peyniri.",
+            image: "special-kunefe.png",
+            badge: "Özel tarif",
+            tagline: "Daha yoğun fıstık ve peynir oranı.",
+            desc: "Özenle seçilmiş malzemelerle hazırlanan, özel tarif künefemiz.",
+            prices: [
+                { label: "1 Kişilik", price: "230.00 ₺" },
+                { label: "2 Kişilik", price: "470.00 ₺" },
+                { label: "3 Kişilik", price: "680.00 ₺" },
+                { label: "4 Kişilik", price: "870.00 ₺" }
+            ],
+            note: ""
+        },
+        "fistikzade-kunefe": {
+            category: "Künefe",
+            title: "Fıstıkzade Künefe",
+            subtitle: "Özel Kaymak, Sade Yağ, Tane ve Bol Fıstıklı.",
+            image: "fistikzade-kunefe.png",
+            badge: "Fıstık şöleni",
+            tagline: "Kaymak ve tane fıstığın buluştuğu yoğun lezzet.",
+            desc: "Kaymak ve tane fıstığın bolca kullanıldığı fıstıkzade künefemiz.",
+            prices: [
+                { label: "1 Kişilik", price: "290.00 ₺" },
+                { label: "2 Kişilik", price: "570.00 ₺" },
+                { label: "3 Kişilik", price: "840.00 ₺" },
+                { label: "4 Kişilik", price: "1090.00 ₺" }
+            ],
+            note: ""
+        },
+        "burger-fistik-zade": {
+            category: "Künefe",
+            title: "Burger - Fıstık Zade",
+            subtitle: "Çiğ Kadayıf, Özel Sade Yağ, Bol Fıstık.",
+            image: "burger-fistik-zade.png",
+            badge: "Özel sunum",
+            tagline: "Burger formunda servis edilen künefe.",
+            desc: "Çiğ kadayıf ve bol fıstıkla hazırlanmış, burger formunda sunulan farklı yorum.",
+            prices: [
+                { label: "1 Kişilik", price: "390.00 ₺" },
+                { label: "2 Kişilik", price: "790.00 ₺" },
+                { label: "3 Kişilik", price: "1150.00 ₺" }
+            ],
+            note: ""
+        },
+        "dondurmali-hasir": {
+            category: "Künefe",
+            title: "Dondurmalı Hasır",
+            subtitle: "Hasır-Tel Kadayıf, Özel Sade Yağ, Bol Fıstık, Dondurma.",
+            image: "dondurmali-hasir.png",
+            badge: "Sıcak–soğuk uyumu",
+            tagline: "Sıcak künefe ile soğuk dondurmanın buluşması.",
+            desc: "Hasır künefe üzerine eklenen dondurma ile sıcak ve soğuk lezzetler bir arada.",
+            prices: [
+                { label: "1 Kişilik", price: "275.00 ₺" },
+                { label: "2 Kişilik", price: "550.00 ₺" },
+                { label: "3 Kişilik", price: "810.00 ₺" }
+            ],
+            note: ""
+        },
+        "ezme-kunefe": {
+            category: "Künefe",
+            title: "Ezme Künefe",
+            subtitle: "Hasır Kadayıf, Özel Sade Yağ, Bol Fıstık, Özel Künefe Kaymağı.",
+            image: "ezme-kunefe.png",
+            badge: "Yoğun kıvam",
+            tagline: "Fıstığın ezme formda kullanıldığı künefe.",
+            desc: "Kaymak ve bol fıstıkla hazırlanan, yoğun kıvamlı özel ezme künefe.",
+            prices: [
+                { label: "1 Kişilik", price: "380.00 ₺" },
+                { label: "2 Kişilik", price: "750.00 ₺" },
+                { label: "3 Kişilik", price: "1100.00 ₺" }
+            ],
+            note: ""
+        },
+        "billuriye-kunefe": {
+            category: "Künefe",
+            title: "Billuriye Künefe",
+            subtitle: "Hasır-Tel Kadayıf, Özel Sade Yağ, Bol Fıstık, Kaymak, Dondurma.",
+            image: "billuriye-kunefe.png",
+            badge: "Zengin içerik",
+            tagline: "Kaymak ve dondurmayla zenginleşen lezzet.",
+            desc: "Fıstık, kaymak ve dondurmanın bir arada olduğu zengin içerikli billuriye künefe.",
+            prices: [
+                { label: "1 Kişilik", price: "265.00 ₺" },
+                { label: "2 Kişilik", price: "520.00 ₺" },
+                { label: "3 Kişilik", price: "750.00 ₺" }
+            ],
+            note: ""
+        },
+        "dondurma-menu": {
+            category: "Dondurma",
+            title: "Dondurma Menü",
+            subtitle: "Özel yapım sade dondurma ve fıstıklı çeşitler.",
+            image: "dondurma-menu.png",
+            badge: "Serinleten lezzetler",
+            tagline: "Sade ve fıstıklı dondurma çeşitleri.",
+            desc: "Özel yapım sade dondurma ile fıstık ezmeli ve lokumlu seçenekler.",
+            prices: [
+                { label: "Fıstık Ezmeli Sarma", price: "170.00 ₺" },
+                { label: "Lokum Dondurma", price: "140.00 ₺" },
+                { label: "Porsiyon Dondurma", price: "90.00 ₺" },
+                { label: "1 Kg Dondurma", price: "180.00 ₺" }
+            ],
+            note: ""
+        },
+        "soguk-tatlilar": {
+            category: "Soğuk Tatlı",
+            title: "Soğuk Tatlılar",
+            subtitle: "Sütlü ve şerbetli soğuk tatlı çeşitlerimiz.",
+            image: "soguk-tatlilar.png",
+            badge: "Porsiyon",
+            tagline: "Hafif ve ferahlatıcı tatlılar.",
+            desc: "Sütlü ve şerbetli soğuk tatlılardan oluşan geniş menümüz.",
+            prices: [
+                { label: "Fırın Sütlaç", price: "120.00 ₺" },
+                { label: "Kabak Tatlısı", price: "120.00 ₺" },
+                { label: "Ayva Tatlısı", price: "120.00 ₺" },
+                { label: "Sütlü Kadayıf", price: "150.00 ₺" },
+                { label: "Billuriye Kadayıf", price: "150.00 ₺" },
+                { label: "Şöbiyet Kadayıf", price: "150.00 ₺" },
+                { label: "Fıstık Zade Kadayıf", price: "150.00 ₺" },
+                { label: "Ali Zade Kadayıf", price: "150.00 ₺" },
+                { label: "Fıstık Burma", price: "150.00 ₺" },
+                { label: "Hasır Kadayıf", price: "130.00 ₺" }
+            ],
+            note: ""
+        },
+        "icecekler": {
+            category: "İçecekler",
+            title: "İçecekler",
+            subtitle: "Sıcak ve soğuk içecek çeşitlerimiz.",
+            image: "icecekler.png",
+            badge: "Bardak / Şişe",
+            tagline: "Tatlılarınıza eşlik eden içecekler.",
+            desc: "Gazlı içeceklerden sıcak içeceklere kadar geniş içecek menümüz.",
+            prices: [
+                { label: "Fanta", price: "50.00 ₺" },
+                { label: "Kola", price: "50.00 ₺" },
+                { label: "FruisTea", price: "50.00 ₺" },
+                { label: "Su", price: "10.00 ₺" },
+                { label: "Türk Kahvesi", price: "90.00 ₺" },
+                { label: "Sahlep", price: "100.00 ₺" },
+                { label: "Ihlamur", price: "75.00 ₺" },
+                { label: "Adaçayı", price: "75.00 ₺" },
+                { label: "Nane Limon", price: "75.00 ₺" },
+                { label: "Çay", price: "0.00 ₺" }
+            ],
+            note: ""
+        },
+        "cerez": {
+            category: "Çerez",
+            title: "Çerez",
+            subtitle: "Çerez ve tarhana çeşitlerimiz.",
+            image: "cerez.png",
+            badge: "Porsiyon",
+            tagline: "Atıştırmalık eşlikçileriniz.",
+            desc: "Tatlı öncesi veya sonrası paylaşmalık çerez seçeneklerimiz.",
+            prices: [
+                { label: "Tarhana", price: "150.00 ₺" },
+                { label: "Çerez", price: "150.00 ₺" }
+            ],
+            note: ""
+        },
+        "paket-depozito": {
+            category: "Depozito",
+            title: "Paket Depozito",
+            subtitle: "Paket servis tepsi depozito ve paket ücretleri.",
+            image: "paket-depozito.png",
+            badge: "Paket servis",
+            tagline: "Tepsi ve mesafe bazlı paket ücretleri.",
+            desc: "Paketle alınan künefeler için tepsi depozito ve mesafe bazlı teslimat ücretleri.",
+            prices: [
+                { label: "1 Kişilik Tepsi", price: "35.00 ₺" },
+                { label: "2 Kişilik Tepsi", price: "65.00 ₺" },
+                { label: "3 Kişilik Tepsi", price: "60.00 ₺" },
+                { label: "4 Kişilik Tepsi", price: "70.00 ₺" },
+                { label: "Paket Ücreti - Kısa Mesafe", price: "45.00 ₺" },
+                { label: "Paket Ücreti - Uzak Mesafe", price: "60.00 ₺" }
+            ],
+            note: ""
+        },
+        "katmer": {
+            category: "Katmer",
+            title: "Katmer Çeşitleri",
+            subtitle: "Klasik, simit ve çikolatalı katmerler.",
+            image: "cikolatali-katmer.png",
+            badge: "Porsiyon",
+            tagline: "İnce hamur, bol fıstık.",
+            desc: "Klasik katmerden çikolatalı muskaya uzanan çeşitli katmer seçeneklerimiz.",
+            prices: [
+                { label: "Katmer", price: "480.00 ₺" },
+                { label: "Simit Katmer", price: "490.00 ₺" },
+                { label: "Çikolatalı Katmer", price: "540.00 ₺" },
+                { label: "Çikolatalı Muska Katmer", price: "225.00 ₺" }
+            ],
+            note: ""
+        }
+    };
+
+    const productOrder = [
+        "peynirli-kunefe",
+        "hasir-peynirli",
+        "fistikli-kunefe",
+        "hasir-kaymakli-kunefe",
+        "yari-hasir-yari-peynir",
+        "yari-fistikzade-yari-billuriye",
+        "uc-bir-arada",
+        "dort-bir-arada",
+        "special-kunefe",
+        "fistikzade-kunefe",
+        "burger-fistik-zade",
+        "dondurmali-hasir",
+        "ezme-kunefe",
+        "billuriye-kunefe",
+        "dondurma-menu",
+        "soguk-tatlilar",
+        "icecekler",
+        "cerez",
+        "paket-depozito",
+        "katmer"
+    ];
+
+    let currentIndex = 0;
+
+    function renderProduct(key) {
+        const p = products[key];
+        if (!p) return;
+
+        const heroImage     = document.getElementById("heroImage");
+        const heroTitle     = document.getElementById("heroTitle");
+        const heroSub       = document.getElementById("heroSub");
+        const heroPrice     = document.getElementById("heroPrice");
+        const categoryLabel = document.getElementById("categoryLabel");
+
+        const card        = document.getElementById("mainCard");
+        const cardTitle   = document.getElementById("cardTitle");
+        const cardTagline = document.getElementById("cardTagline");
+        const cardBadge   = document.getElementById("cardBadge");
+        const cardDesc    = document.getElementById("cardDesc");
+        const cardNote    = document.getElementById("cardNote");
+        const priceList   = document.getElementById("priceList");
+
+        heroImage.style.opacity = "0";
+        setTimeout(() => {
+            heroImage.src = p.image;
+            heroImage.alt = p.title;
+            heroImage.style.opacity = "1";
+        }, 80);
+
+        heroTitle.textContent     = p.title;
+        heroSub.textContent       = p.subtitle || "";
+        categoryLabel.textContent = p.category || "";
+
+        cardTitle.textContent   = p.title;
+        cardTagline.textContent = p.tagline || "";
+        cardBadge.textContent   = p.badge || "";
+        cardDesc.textContent    = p.desc || "";
+        cardNote.textContent    = p.note || "";
+
+        priceList.innerHTML = "";
+        (p.prices || []).forEach(row => {
+            const div = document.createElement("div");
+            div.className = "price-row";
+            div.innerHTML = `<span>${row.label}</span><span>${row.price}</span>`;
+            priceList.appendChild(div);
+        });
+
+        heroPrice.textContent =
+            (p.prices && p.prices.length > 0) ? p.prices[0].price : "";
+
+        document.title = `${p.title} | Bab-ı Alâ Künefe`;
+
+        card.classList.remove("slide-in");
+        void card.offsetWidth;
+        card.classList.add("slide-in");
+    }
+
+    function buildTabs() {
+        const container   = document.getElementById("productTabs");
+        const prevBtn     = document.getElementById("tabPrev");
+        const nextBtn     = document.getElementById("tabNext");
+        const heroArea    = document.getElementById("heroArea");
+        const contentArea = document.getElementById("contentArea");
+
+        container.innerHTML = "";
+        const padding = 8;
+
+        productOrder.forEach((key, index) => {
+            const p = products[key];
+            if (!p) return;
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "product-tab";
+            btn.dataset.index = index;
+            btn.innerHTML = `
+                <span class="title">${p.title}</span>
+                <span class="meta">${p.category}</span>
+            `;
+
+            btn.addEventListener("click", () => {
+                const idx = parseInt(btn.dataset.index, 10);
+                const isLast = idx === productOrder.length - 1;
+                const same   = idx === currentIndex;
+
+                if (isLast && same) {
+                    setActiveByIndex(0);
+                } else {
+                    setActiveByIndex(idx);
+                }
+            });
+
+            container.appendChild(btn);
+        });
+
+        const tabsNodeList = () => container.querySelectorAll(".product-tab");
+
+        function scrollActiveTab(behavior = "smooth") {
+            const tabs = tabsNodeList();
+            const activeTab = tabs[currentIndex];
+            if (!activeTab) return;
+
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            let newScroll;
+
+            if (currentIndex === 0) {
+                // İlk tab → her zaman en sola otursun
+                newScroll = 0;
+            } else {
+                // Scroll’u hesaplarken mevcut scrollLeft’i dikkate al
+                const containerRect = container.getBoundingClientRect();
+                const tabRect       = activeTab.getBoundingClientRect();
+                const offsetInView  = tabRect.left - containerRect.left;
+
+                newScroll = container.scrollLeft + offsetInView - padding;
+            }
+
+            if (newScroll < 0) newScroll = 0;
+            if (newScroll > maxScroll) newScroll = maxScroll;
+
+            container.scrollTo({ left: newScroll, behavior });
+        }
+
+        function setActiveByIndex(index, behavior = "smooth") {
+            const tabs = tabsNodeList();
+            const count = tabs.length;
+            if (count === 0) return;
+
+            currentIndex = ((index % count) + count) % count;
+
+            tabs.forEach(t => t.classList.remove("active"));
+            const activeTab = tabs[currentIndex];
+            if (activeTab) {
+                activeTab.classList.add("active");
+            }
+
+            const key = productOrder[currentIndex];
+            renderProduct(key);
+            scrollActiveTab(behavior);
+        }
+
+        prevBtn.onclick = () => setActiveByIndex(currentIndex - 1);
+        nextBtn.onclick = () => setActiveByIndex(currentIndex + 1);
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchActive = false;
+
+        function onTouchStart(e) {
+            if (!e.touches || e.touches.length === 0) return;
+            touchActive = true;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function onTouchEnd(e) {
+            if (!touchActive) return;
+            touchActive = false;
+            if (!e.changedTouches || e.changedTouches.length === 0) return;
+
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const dx   = endX - touchStartX;
+            const dy   = endY - touchStartY;
+
+            if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                if (dx < 0) {
+                    setActiveByIndex(currentIndex + 1);
+                } else {
+                    setActiveByIndex(currentIndex - 1);
+                }
+            }
+        }
+
+        [heroArea, contentArea].forEach(el => {
+            el.addEventListener("touchstart", onTouchStart, { passive: true });
+            el.addEventListener("touchend", onTouchEnd, { passive: true });
+        });
+
+        // İlk yükleme → 0. index
+        setActiveByIndex(0, "auto");
+    }
+
+    buildTabs();
+</script>
+
+</body>
+</html>
